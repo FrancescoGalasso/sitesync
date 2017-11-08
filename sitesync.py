@@ -426,7 +426,27 @@ def sync_db():
         # psql $LOCAL_DBNAME --command="select * from django_site"
 
     elif use_mysql:
-        raise Exception('TODO: mysqsl sync !')
+
+        # Drop local db
+        command = 'mysql --execute="drop database if exists %s"' % (
+            conf('local_db', 'name')
+        )
+        run_command(command)
+
+        # Create empty local db
+        command = 'mysql --execute="create database {name}; GRANT ALL ON {name}.* TO \'{user}\'@\'localhost\';"'.format(
+            name=conf('local_db', 'name'),
+            user=conf('local_db', 'user'),
+        )
+        run_command(command)
+
+        # Dump remote db and feed local one
+        command = dbdump_command
+        if conf('general', 'use_gzip'):
+            command += " | gunzip"
+        command += " | mysql %s" % conf('local_db', 'name')
+        run_command(command)
+
     else:
         raise Exception('Unkwnown database type')
 
