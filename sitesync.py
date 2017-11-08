@@ -36,7 +36,7 @@ use_gzip=True
 [ssh]
 host={project}.it
 user={project}
-port=22
+options=-p 22
 sudo=True
 sudo_user={sudo_user}
 
@@ -192,12 +192,12 @@ def run_command(command):
 def build_ssh_command(command):
     user = conf('ssh', 'user')
     host = conf('ssh', 'host')
-    port = conf('ssh', 'port')
+    options = conf('ssh', 'options')
 
     # start with "ssh user@host"
     ssh_command = "ssh "
-    if port:
-        ssh_command += "-p %s " % port
+    if options:
+        ssh_command += options + " "
     if user:
         ssh_command += user + '@'
     ssh_command += host
@@ -455,13 +455,13 @@ def rsync_data(rsync_source, rsync_target):
 
     user = conf('ssh', 'user')
     host = conf('ssh', 'host')
-    port = conf('ssh', 'port')
+    options = conf('ssh', 'options')
     exclude = conf('remote_data', 'exclude')
 
     # start with "ssh user@host"
     ssh_command = "ssh"
-    if port:
-        ssh_command += " -p %s" % port
+    if options:
+        ssh_command += " " + options
 
     # Example:
     # rsync -avz -e "ssh" --delete --progress --partial --exclude="CACHE/" ...
