@@ -371,11 +371,11 @@ def dump_local_db(prefix):
     command = ''
     if use_postgresql:
         command = "pg_dump --dbname=%s" % (
-            conf('remote_db', 'name'),
+            conf('local_db', 'name'),
         )
     elif use_mysql:
         command = "mysqldump %s" % (
-            conf('remote_db', 'name'),
+            conf('local_db', 'name'),
         )
 
     if is_true(conf('general', 'use_gzip')):
