@@ -589,6 +589,8 @@ def main():
     # Parse command line
     #
 
+    default_config_filename = './%s%sconf' % (os.path.splitext(os.path.basename(__file__))[0], os.path.extsep)
+
     # See: https://docs.python.org/2/library/argparse.html
     parser = MyParser(
         description='Dump remote db and/or data, or Sync local db and/or data from remote instance',
@@ -598,6 +600,8 @@ def main():
     )
     parser.add_argument('action', metavar='action', choices=('sync', 'dump'), help="choices: sync, dump")
     parser.add_argument('target', metavar='target', choices=('db', 'data', 'all'), help="choices: db, data, all")
+    parser.add_argument('-c', '--config', metavar='config_filename', default=default_config_filename,
+        help="config. filename (default = \"%s\")" % default_config_filename)
     parser.add_argument('-v', '--verbosity', type=int, choices=[0, 1, 2, 3], default=2, help="Verbosity level. (default: 2)")
     parser.add_argument('--dry-run', '-d', action='store_true', help="simulate actions")
     parser.add_argument('--quiet', '-q', action='store_true', help="do not require user confirmation before executing commands")
@@ -616,16 +620,18 @@ def main():
         # Read config. file
         #config_filename = os.path.splitext(sys.argv[0])[0] + os.path.extsep + "conf"
         # Example: "./manage_sync.conf"
-        config_filename = './%s%sconf' % (os.path.splitext(os.path.basename(__file__))[0], os.path.extsep)
+        #config_filename = './%s%sconf' % (os.path.splitext(os.path.basename(__file__))[0], os.path.extsep)
+        config_filename = args.config.strip()
         config = ConfigParser.ConfigParser()
         success = len(config.read(config_filename)) > 0
         if success:
             logger.info('Using config file "%s"' % config_filename)
         else:
-            # if not found, create a default config file and re-read it
+            # if not found, create a default config file and exit
             if not args.quiet and query_yes_no('Create default config file "%s" ?' % config_filename):
                 create_default_config_file(config_filename)
-                logger.warning('Default config file "%s" has been created' % config_filename)
+                logger.warning('Default config file "%s" has been created; please revise' % config_filename)
+                exit(-1)
             success = len(config.read(config_filename)) > 0
         # if still failing, give up
         if not success:
