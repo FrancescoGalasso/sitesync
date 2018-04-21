@@ -1,10 +1,18 @@
 sitesync
 ========
 
-:Description: Script to sync db and/or data from remote host
-:Author: Mario Orlandi, 2017
-:Info: Brainstorm S.n.c - http://brainstorm.it
+Script to sync db and/or data from remote host
 
+Installation
+------------
+
+::
+
+    pip install git+https://github.com/morlandi/sitesync
+
+
+Usage
+-----
 
 Provides an easy way to build a working local copy from a remote site, either by:
 
