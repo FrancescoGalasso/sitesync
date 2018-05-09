@@ -10,7 +10,9 @@ import argparse
 import logging
 import datetime
 import traceback
-import ConfigParser
+from six.moves import configparser
+from six.moves import input
+import sitesync
 
 
 logger = logging.getLogger(__name__)
@@ -157,7 +159,7 @@ def query_yes_no(question, default="yes"):
 
     while True:
         sys.stdout.write(question + prompt)
-        choice = raw_input().lower()
+        choice = input().lower()
         if default is not None and choice == '':
             return valid[default]
         elif choice in valid:
@@ -606,6 +608,7 @@ def main():
     parser.add_argument('--dry-run', '-d', action='store_true', help="simulate actions")
     parser.add_argument('--quiet', '-q', action='store_true', help="do not require user confirmation before executing commands")
     parser.add_argument('--localhost', '-l', action='store_true', help="dump db and data from localhost into ./dumps/localhost")
+    parser.add_argument('--version', action='version', version='%(prog)s ' + sitesync.__version__)
     args = parser.parse_args()
 
 
@@ -622,7 +625,7 @@ def main():
         # Example: "./manage_sync.conf"
         #config_filename = './%s%sconf' % (os.path.splitext(os.path.basename(__file__))[0], os.path.extsep)
         config_filename = args.config.strip()
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         success = len(config.read(config_filename)) > 0
         if success:
             logger.info('Using config file "%s"' % config_filename)
