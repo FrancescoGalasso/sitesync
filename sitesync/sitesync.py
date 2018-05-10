@@ -119,7 +119,8 @@ def create_default_config_file(config_filename):
 
     text = default_config.format(
         project=project,
-        cwd=cwd,
+        #cwd=cwd,
+        cwd='.',
         app_type=app_type,
         db_type=db_type,
         sudo_user=sudo_user,
