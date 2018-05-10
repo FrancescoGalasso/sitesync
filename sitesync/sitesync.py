@@ -308,7 +308,8 @@ def download_dbdump_command():
     if use_postgresql:
 
         # Example: command = "pg_dump --dbname=brainweb"
-        command = "pg_dump --dbname=%s" % (
+        command = "pg_dump %s%s" % (
+            "--dbname=" if not args.legacy else "",
             conf('remote_db', 'name'),
         )
 
@@ -393,7 +394,8 @@ def dump_local_db(prefix):
     # Prepare command to dump local db
     command = ''
     if use_postgresql:
-        command = "pg_dump --dbname=%s" % (
+        command = "pg_dump %s%s" % (
+            "--dbname=" if not args.legacy else "",
             conf('local_db', 'name'),
         )
     elif use_mysql:
@@ -423,13 +425,15 @@ def sync_db():
     if use_postgresql:
 
         # Drop local db
-        command = 'psql --dbname="template1" --command="drop database if exists %s"' % (
+        command = 'psql %s"template1" --command="drop database if exists %s"' % (
+            "--dbname=" if not args.legacy else "",
             conf('local_db', 'name')
         )
         run_command(command)
 
         # Create empty local db
-        command = 'psql --dbname="template1" --command="create database %s owner %s"' % (
+        command = 'psql %s"template1" --command="create database %s owner %s"' % (
+            "--dbname=" if not args.legacy else "",
             conf('local_db', 'name'),
             conf('local_db', 'user'),
         )
@@ -630,6 +634,7 @@ def main():
     parser.add_argument('--quiet', '-q', action='store_true', help="do not require user confirmation before executing commands")
     parser.add_argument('--localhost', '-l', action='store_true', help="dump db and data from localhost into ./dumps/localhost")
     parser.add_argument('--version', action='version', version='%(prog)s ' + get_version())
+    parser.add_argument('--legacy', action='store_true', default=False, help="use legacy Postgresql command syntax")
     args = parser.parse_args()
 
 
