@@ -426,14 +426,14 @@ def sync_db():
     if use_postgresql:
 
         # Drop local db
-        command = 'psql %s"template1" --command="drop database if exists %s"' % (
+        command = 'psql %s"template1" --command=\'drop database if exists "%s"\'' % (
             "--dbname=" if not args.legacy else "",
             conf('local_db', 'name')
         )
         run_command(command)
 
         # Create empty local db
-        command = 'psql %s"template1" --command="create database %s owner %s"' % (
+        command = 'psql %s"template1" --command=\'create database "%s" owner "%s"\'' % (
             "--dbname=" if not args.legacy else "",
             conf('local_db', 'name'),
             conf('local_db', 'user'),
