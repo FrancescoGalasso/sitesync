@@ -5,6 +5,7 @@ History
 
 v1.0.3
 ------
+* Suggest relative local paths in default config file
 * Added support for legacy Postgresql syntax
 
 v1.0.2
