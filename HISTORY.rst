@@ -3,6 +3,10 @@
 History
 =======
 
+v1.0.2
+------
+* Python 2 & 3 compatibility
+
 v1.0.1
 ------
 * Few fixes for Python3

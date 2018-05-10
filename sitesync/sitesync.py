@@ -4,15 +4,36 @@
 # Brainstorm S.n.c - http://brainstorm.it
 # author: Mario Orlandi, 2017
 
+from __future__ import absolute_import
+
 import os
 import sys
 import argparse
 import logging
 import datetime
 import traceback
-from six.moves import configparser
-from six.moves import input
-import sitesync
+
+# from six.moves import configparser
+# from six.moves import input
+
+try:
+    from configparser import ConfigParser
+except:
+    from ConfigParser import ConfigParser
+
+try:
+    # this raw_input is not converted by 2to3
+    term_input = raw_input
+except NameError:
+    term_input = input
+
+
+def get_version():
+    try:
+        import sitesync
+        return sitesync.__version__
+    except:
+        return '???'
 
 
 logger = logging.getLogger(__name__)
@@ -159,7 +180,7 @@ def query_yes_no(question, default="yes"):
 
     while True:
         sys.stdout.write(question + prompt)
-        choice = input().lower()
+        choice = term_input().lower()
         if default is not None and choice == '':
             return valid[default]
         elif choice in valid:
@@ -608,7 +629,7 @@ def main():
     parser.add_argument('--dry-run', '-d', action='store_true', help="simulate actions")
     parser.add_argument('--quiet', '-q', action='store_true', help="do not require user confirmation before executing commands")
     parser.add_argument('--localhost', '-l', action='store_true', help="dump db and data from localhost into ./dumps/localhost")
-    parser.add_argument('--version', action='version', version='%(prog)s ' + sitesync.__version__)
+    parser.add_argument('--version', action='version', version='%(prog)s ' + get_version())
     args = parser.parse_args()
 
 
@@ -625,7 +646,7 @@ def main():
         # Example: "./manage_sync.conf"
         #config_filename = './%s%sconf' % (os.path.splitext(os.path.basename(__file__))[0], os.path.extsep)
         config_filename = args.config.strip()
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         success = len(config.read(config_filename)) > 0
         if success:
             logger.info('Using config file "%s"' % config_filename)
