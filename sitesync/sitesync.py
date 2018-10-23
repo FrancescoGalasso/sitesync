@@ -309,19 +309,25 @@ def download_dbdump_command():
     if use_postgresql:
 
         # Example: command = "pg_dump --dbname=brainweb"
-        # Note: "--no-owner" option requires Postgresql >= 9.3
-        command = "pg_dump --no-owner %s%s" % (
+        command = "pg_dump %s%s" % (
             "--dbname=" if not args.legacy else "",
             conf('remote_db', 'name'),
         )
 
-        # # Fix db owner
-        # remote_db_user = conf('remote_db', 'user')
-        # local_db_user = conf('local_db', 'user')
-        # if remote_db_user != local_db_user:
-        #     search = 'OWNER TO %s;$' % remote_db_user
-        #     replace = 'OWNER TO %s;' % local_db_user
-        #     command += " | sed -e 's/%s/%s/g'" % (search, replace)
+        # Fix db owner
+        remote_db_user = conf('remote_db', 'user')
+        local_db_user = conf('local_db', 'user')
+        if remote_db_user != local_db_user:
+
+            # 'OWNER TO abc;' --> 'OWNER TO xyz;'
+            search = 'OWNER TO %s;$' % remote_db_user
+            replace = 'OWNER TO %s;' % local_db_user
+            command += " | sed -e 's/%s/%s/g'" % (search, replace)
+
+            # 'OWNER TO "abc";' --> 'OWNER TO "xyz";'
+            search = 'OWNER TO \\"%s\\";$' % remote_db_user
+            replace = 'OWNER TO \\"%s\\";' % local_db_user
+            command += " | sed -e 's/%s/%s/g'" % (search, replace)
 
     elif use_mysql:
 
